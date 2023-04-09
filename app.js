@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-const events = [];
+const Event = require('./models/event');
 
 app.use(bodyParser.json());
 
@@ -40,18 +40,39 @@ app.use('/graphql', graphqlHTTP({
     `),
     rootValue: {
         events: () => {
-            return events;
+            return Event
+                .find()
+                .then(events => {
+                    return events.map(event => {
+                        return {
+                            ...event._doc,
+                            date: new Date(event._doc.date).toISOString()
+                        };
+                    });
+                })
+                .catch(err => console.log(err))
         },
         createEvent: (args) => {
-            const event = {
-                _id: Math.random().toString(),
+            const event = new Event({
                 title: args.eventInput.title,
                 price: +args.eventInput.price,
                 description: args.eventInput.description,
-                date: args.eventInput.date
-            };
-            events.push(event);
-            return event;
+                date: new Date(args.eventInput.date)
+            });
+
+            return event
+                .save()
+                .then(result => {
+                    console.log(result);
+                    return {
+                        ...result._doc,
+                        date: new Date(result._doc.date).toISOString()
+                    };
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw err;
+                });
         }
     },
     graphiql: true
@@ -59,7 +80,7 @@ app.use('/graphql', graphqlHTTP({
 
 mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:
 ${process.env.MONGO_PASSWORD}
-@cluster01.1s7bqpe.mongodb.net/?retryWrites=true&w=majority`)
+@cluster01.1s7bqpe.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`)
     .then(() => {
         app.listen(3000, '127.0.0.1');
     })
