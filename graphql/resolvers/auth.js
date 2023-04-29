@@ -2,8 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 
-const { events } = require('./merge');
-
 module.exports = {
     users: async () => {
         try {
@@ -11,8 +9,7 @@ module.exports = {
             return users.map(user => {
                 return {
                     ...user._doc,
-                    password: null,
-                    createdEvents: events.bind(this, user._doc.createdEvents)
+                    password: null
                 };
             });
         } catch (err) {
@@ -36,8 +33,7 @@ module.exports = {
             const result = await user.save();
             return {
                 ...result._doc,
-                password: null,
-                createdEvents: events.bind(this, result._doc.createdEvents)
+                password: null
             }
         } catch (err) {
             console.log(err);
