@@ -50,7 +50,7 @@ module.exports = {
             throw new Error('Password is incorrect!');
         }
 
-        //The user.id is the virtual getter for id of user, not the OjectId
+        //The user.id is the virtual getter for id of user, not the ObjectId
         //The first arg of sign() is the data we store with the token
         const token = jwt.sign({ userId: user.id, email: user.email }, 'somesupersecretkey', {
             expiresIn: '1h'
