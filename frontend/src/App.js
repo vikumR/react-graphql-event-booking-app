@@ -39,13 +39,14 @@ class App extends Component {
             <MainNavigation />
             <main className='main-content'>
               <Routes>
-                {!this.state.token && <Route index path="/" element={<Navigate to="/auth" />} />}
                 {this.state.token && <Route index path="/" element={<Navigate to="/events" />} />}
-                {this.state.token && <Route index path="/auth" element={<Navigate to="/events" />} />}
+                {this.state.token && <Route path="/auth" element={<Navigate to="/events" />} />}
 
                 {!this.state.token && <Route path="/auth" element={<AuthPage />} />}
                 <Route path="/events" element={<EventsPage />} />
                 {this.state.token && <Route path="/bookings" element={<BookingsPage />} />}
+
+                {!this.state.token && <Route path="/bookings" element={<Navigate to="/auth" />} />}
               </Routes>
             </main>
           </AuthContext.Provider>
