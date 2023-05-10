@@ -11,41 +11,36 @@ module.exports = {
                 return transformEvent(event);
             });
         } catch (err) {
-            console.log(err);
             throw err;
         }
     },
-
     createEvent: async (args, req) => {
         if (!req.isAuth) {
             throw new Error('Unauthenticated!');
         }
         const event = new Event({
             title: args.eventInput.title,
-            price: +args.eventInput.price,
             description: args.eventInput.description,
+            price: +args.eventInput.price,
             date: new Date(args.eventInput.date),
             creator: req.userId
         });
-
-        let enventCreated;
-
+        let createdEvent;
         try {
             const result = await event.save();
-            enventCreated = transformEvent(result);
+            createdEvent = transformEvent(result);
+            const creator = await User.findById(req.userId);
 
-            const creator = await User.findById('643285729058d2a2d0582d70');
             if (!creator) {
-                throw new Error('User does not exist!');
+                throw new Error('User not found.');
             }
-
             creator.createdEvents.push(event);
             await creator.save();
-            return enventCreated;
 
+            return createdEvent;
         } catch (err) {
             console.log(err);
             throw err;
         }
     }
-}
+};
