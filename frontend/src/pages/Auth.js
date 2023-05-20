@@ -75,6 +75,8 @@ class AuthPage extends Component {
         })
             .then(res => {
                 if (res.status !== 200 && res.status !== 201) {
+                    const errorMessage = this.state.isLogin ? 'Failed to Login!' : 'Failed to Sign Up!'
+                    toast.error(errorMessage);
                     throw new Error('Failed');
                 }
 
