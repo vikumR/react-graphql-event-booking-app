@@ -89,7 +89,13 @@ class AuthPage extends Component {
                     const tokenExpiration = resData.data.login.tokenExpiration;
 
                     if (token) {
-                        this.context.login(token, userId, tokenExpiration);
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('userId', userId);
+
+                        const tokenExpirationDuration = tokenExpiration * 3600 * 1000;
+                        localStorage.setItem('tokenExpiration', tokenExpirationDuration);
+
+                        this.context.login(token, userId, tokenExpirationDuration);
                     }
                 } else {
                     toast.success('Signed up successfully!');

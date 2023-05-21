@@ -16,6 +16,7 @@ class App extends Component {
 
   login = (token, userId, tokenExpiration) => {
     this.setState({ token: token, userId: userId });
+    this.checkAuthTimeout(tokenExpiration);
   }
 
   logout = () => {
@@ -23,6 +24,24 @@ class App extends Component {
       token: null,
       userId: null
     });
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('tokenExpiration');
+  }
+
+  checkAuthTimeout = (expirationTime) => {
+    setTimeout(() => {
+      this.logout();
+    }, expirationTime);
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (token && userId) {
+      this.setState({ token: token, userId: userId });
+    }
   }
 
   render() {
