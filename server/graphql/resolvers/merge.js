@@ -9,8 +9,8 @@ const eventLoader = new DataLoader((eventIds) => {
     return events(eventIds);
 });
 
-const userLoader = new DataLoader(userIds => {
-    return User.find({ _id: { $in: userIds } });
+const userLoader = new DataLoader(async userIds => {
+    return await User.find({ _id: { $in: userIds } });
 });
 
 const events = async eventIds => {

@@ -5,6 +5,8 @@ import Backdrop from "../components/Backdrop/Backdrop";
 import AuthContext from "../ context/auth-context";
 import EventList from "../components/Events/EventList/EventList";
 import Spinner from "../components/Spinner/Spinner";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class EventsPage extends Component {
 
@@ -157,14 +159,14 @@ class EventsPage extends Component {
             }
         })
             .then(res => {
-                if (res.status !== 200 && res.status !== 201) {
-                    throw new Error('Failed');
-                }
                 return res.json();
             })
             .then(resData => {
-                console.log(resData);
                 this.setState({ selectedEvent: null });
+                if (resData.errors) {
+                    const errorMessage = resData.errors[0].message
+                    toast.error(errorMessage);
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -279,7 +281,7 @@ class EventsPage extends Component {
                         onViewDetail={this.showDetailHandler}
                     />
                 }
-
+                <ToastContainer />
             </React.Fragment>
         );
     }

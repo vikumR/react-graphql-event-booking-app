@@ -16,6 +16,7 @@ class App extends Component {
 
   login = (token, userId, tokenExpiration) => {
     this.setState({ token: token, userId: userId });
+    this.checkAuthTimeout(tokenExpiration);
   }
 
   logout = () => {
@@ -23,6 +24,24 @@ class App extends Component {
       token: null,
       userId: null
     });
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('tokenExpiration');
+  }
+
+  checkAuthTimeout = (expirationTime) => {
+    setTimeout(() => {
+      this.logout();
+    }, expirationTime);
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (token && userId) {
+      this.setState({ token: token, userId: userId });
+    }
   }
 
   render() {
@@ -39,7 +58,7 @@ class App extends Component {
             <MainNavigation />
             <main className='main-content'>
               <Routes>
-                {this.state.token && <Route index path="/" element={<Navigate to="/events" />} />}
+                <Route index path="/" element={<Navigate to="/events" />} />
                 {this.state.token && <Route path="/auth" element={<Navigate to="/events" />} />}
 
                 {!this.state.token && <Route path="/auth" element={<AuthPage />} />}

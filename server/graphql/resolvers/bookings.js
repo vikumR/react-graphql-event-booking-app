@@ -24,6 +24,18 @@ module.exports = {
         }
         try {
             const fetchedEvent = await Event.findOne({ _id: args.eventId });
+            if (!fetchedEvent) {
+                throw new Error('Event does not exist!');
+            }
+
+            const existingBooking = await Booking.findOne({
+                event: fetchedEvent._id,
+                user: req.userId
+            });
+            if (existingBooking) {
+                throw new Error('Booking already exists for this event!');
+            }
+
             const booking = new Booking({
                 user: req.userId,
                 event: fetchedEvent

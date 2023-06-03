@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import './Auth.css'
+import './Auth.css';
 import AuthContext from "../ context/auth-context";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class AuthPage extends Component {
     state = {
@@ -73,18 +75,32 @@ class AuthPage extends Component {
         })
             .then(res => {
                 if (res.status !== 200 && res.status !== 201) {
+                    const errorMessage = this.state.isLogin ? 'Failed to Login!' : 'Failed to Sign Up!'
+                    toast.error(errorMessage);
                     throw new Error('Failed');
                 }
 
                 return res.json();
             })
             .then(resData => {
-                const token = resData.data.login.token;
-                const userId = resData.data.login.userId;
-                const tokenExpiration = resData.data.login.tokenExpiration;
+                if (this.state.isLogin) {
+                    const token = resData.data.login.token;
+                    const userId = resData.data.login.userId;
+                    const tokenExpiration = resData.data.login.tokenExpiration;
 
-                if (token) {
-                    this.context.login(token, userId, tokenExpiration);
+                    if (token) {
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('userId', userId);
+
+                        const tokenExpirationDuration = tokenExpiration * 3600 * 1000;
+                        localStorage.setItem('tokenExpiration', tokenExpirationDuration);
+
+                        this.context.login(token, userId, tokenExpirationDuration);
+                    }
+                } else {
+                    toast.success('Signed up successfully!');
+
+                    this.switchModeHandler();
                 }
 
             })
@@ -95,22 +111,25 @@ class AuthPage extends Component {
 
     render() {
         return (
-            <form className="auth-form" onSubmit={this.submitHandler}>
-                <div className="form-control">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" ref={this.emailEl}></input>
-                </div>
-                <div className="form-control">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" ref={this.passwordEl}></input>
-                </div>
-                <div className="form-actions">
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={this.switchModeHandler}>
-                        Switch To {this.state.isLogin ? 'Sign Up' : 'Login'}
-                    </button>
-                </div>
-            </form>
+            <React.Fragment>
+                <form className="auth-form" onSubmit={this.submitHandler}>
+                    <div className="form-control">
+                        <label htmlFor="email">Email</label>
+                        <input type="email" id="email" ref={this.emailEl}></input>
+                    </div>
+                    <div className="form-control">
+                        <label htmlFor="password">Password</label>
+                        <input type="password" id="password" ref={this.passwordEl}></input>
+                    </div>
+                    <div className="form-actions">
+                        <button type="submit">{this.state.isLogin ? 'Login' : 'Sign Up'}</button>
+                        <button type="button" onClick={this.switchModeHandler}>
+                            Switch To {this.state.isLogin ? 'Sign Up' : 'Login'}
+                        </button>
+                    </div>
+                </form>
+                <ToastContainer />
+            </React.Fragment>
         );
     }
 }
