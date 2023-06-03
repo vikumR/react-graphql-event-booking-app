@@ -39,10 +39,18 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
 });
 
-mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:
-${process.env.MONGO_PASSWORD}
-@cluster01.1s7bqpe.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`)
-    .then(() => {
-        app.listen(8000);
-    })
-    .catch(err => console.log(err));
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster01.1s7bqpe.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
+}
+
+connectDB().then(() => {
+    app.listen(8000, () => {
+        console.log("listening for requests");
+    });
+})
