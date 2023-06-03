@@ -58,7 +58,7 @@ class App extends Component {
             <MainNavigation />
             <main className='main-content'>
               <Routes>
-                {this.state.token && <Route index path="/" element={<Navigate to="/events" />} />}
+                <Route index path="/" element={<Navigate to="/events" />} />
                 {this.state.token && <Route path="/auth" element={<Navigate to="/events" />} />}
 
                 {!this.state.token && <Route path="/auth" element={<AuthPage />} />}
