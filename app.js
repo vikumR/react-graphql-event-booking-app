@@ -41,7 +41,7 @@ app.get('*', (req, res) => {
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(`${process.env.MONGO_URI}`);
+        const conn = await mongoose.connect('mongodb+srv://whizkherAdmin:DSWPk14fQoqQSAFJ@cluster01.1s7bqpe.mongodb.net/events-react-dev?retryWrites=true&w=majority');
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.log(error);
